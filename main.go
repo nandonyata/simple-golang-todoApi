@@ -27,7 +27,7 @@ func main() {
 	r.GET("/tasks", getTasks)
 	r.POST("/tasks", addTask)
 	r.GET("/task/:id", getOneTask)
-	// r.PATCH("/task:id", updateOneTask)
+	r.PATCH("/task/:id", updateOneTask)
 
 	r.Run("localhost:4000")
 
@@ -70,23 +70,14 @@ func getOneTask(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, t)
 }
 
-// func updateOneTask(c *gin.Context) *todo {
-// 	fmt.Println(c, "<<<<")
+func updateOneTask(c *gin.Context) {
+	id := c.Param("id")
+	t, err := getOneById(id)
 
-// 	id := c.Param("id")
-// 	t, err := getOneById(id)
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Error not found"})
+	}
 
-// 	if err != nil {
-// 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
-// 	}
-
-// 	// var newTask todo
-// 	// for i, v := range tasks {
-// 	// 	if v.ID == id {
-// 	// 		if err := c.BindJSON(&newTask); err != nil {
-// 	// 			panic(err)
-// 	// 		}
-
-// 	// 	}
-// 	// }
-// }
+	t.IsComplete = !t.IsComplete
+	c.IndentedJSON(http.StatusOK, t)
+}
